@@ -85,7 +85,7 @@
     <div class="row" style="height: 100%;">
         <div class="col-md-6 image-box d-flex justify-content-center align-items-center">
             <!-- Display profile picture -->
-            <img id="profileImage" class="rounded" src="<?php echo !empty($profileImagePath) ? 'assets/' . $profileImagePath : 'assets/blank.png'; ?>" alt="Profile Picture" class="img-fluid" style="max-width: 100%; height: auto;">
+            <img id="profileImage" class="rounded" src="<?php echo !empty($profileImagePath) ? 'assets/' . $profileImagePath : 'assets/blank.png'; ?>" alt="" class="img-fluid" style="max-width: 100%; height: auto;">
         </div>
         <div class="col-md-6 d-flex flex-column">
             <div class="small-box mb-3">
