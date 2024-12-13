@@ -1,72 +1,108 @@
 <?php
-    session_start();
+session_start();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-    // Check if user is logged in and has stations role
-    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'station') {
-        header("Location: login.php"); // Redirect to login page if not authorized
-        exit();
-    }
+// Database connection
+$servername = "localhost"; // Replace with your server name
+$username = "root"; // Replace with your database username
+$password = ""; // Replace with your database password
+$dbname = "feur-tapping-db"; // Replace with your actual database name
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Initialize variables for JSON response and alerts
+$response = [
+    'success' => false,
+    'data' => null,
+    'message' => ''
+];
+
+// Check if form is submitted and employee_id is set
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['employee_id'])) {
+    $employeeId = $_POST['employee_id'];
+
+    // Prepare SQL query to fetch employee information from users table
+    $sqlUser = "
+        SELECT u.user_id, s.station_name 
+        FROM users u 
+        LEFT JOIN stations s ON u.user_id = s.user_id 
+        WHERE u.user_id = ?";
     
-    // Database connection
-    $servername = "localhost"; // Replace with your server name
-    $username = "root"; // Replace with your database username
-    $password = ""; // Replace with your database password
-    $dbname = "feur-tapping-db"; // Replace with your actual database name
+    $stmtUser = $conn->prepare($sqlUser);
+    $stmtUser->bind_param("s", $_SESSION['user_id']); // Get user_id from session
+    $stmtUser->execute();
+    $resultUser = $stmtUser->get_result();
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    if ($resultUser->num_rows > 0) {
+        $userInfo = $resultUser->fetch_assoc();
+        $stationName = htmlspecialchars($userInfo['station_name']); // Get station name
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+        // Prepare SQL query to fetch employee information
+        $sqlEmployee = "
+            SELECT e.* 
+            FROM Employee e 
+            WHERE e.emp_id = ?";
+        
+        $stmtEmployee = $conn->prepare($sqlEmployee);
+        $stmtEmployee->bind_param("s", $employeeId);
+        $stmtEmployee->execute();
+        $resultEmployee = $stmtEmployee->get_result();
 
-    // Initialize variables
-    $employeeInfo = "";
-    $alertClass = ""; // Variable to hold alert class
-    $profileImagePath = ""; // Variable to hold profile image path
+        if ($resultEmployee->num_rows > 0) {
+            // Set current date and time for logs
+            $currentTime = date('Y-m-d H:i:s');
 
-    // Check if form is submitted and employee_id is set
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['employee_id'])) {
-        $employeeId = $_POST['employee_id'];
-
-        // Prepare and execute SQL query to fetch employee information
-        $sql = "SELECT * FROM employee WHERE employeeID = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $employeeId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            // Fetch the employee data
-            while ($row = $result->fetch_assoc()) {
-                $employeeInfo .= "Employee ID: " . htmlspecialchars($row['employeeID']) . "<br>";
-                $employeeInfo .= "Name: " . htmlspecialchars($row['firstName']) . " " . htmlspecialchars($row['lastName']) . "<br>";
-                $employeeInfo .= "Position: " . htmlspecialchars($row['position']) . "<br>";
-                $employeeInfo .= "Department: " . htmlspecialchars($row['department']) . "<br>";
-                
-                // Get profile image path from imgprofile column
-                if (!empty($row['imgprofile'])) {
-                    $profileImagePath = 'assets/' . htmlspecialchars($row['imgprofile']); // Update to actual profile image path
-                }
-                
-                // Get profile image path from imgprofile column
-                $profileImagePath = htmlspecialchars($row['imgprofile']); // Assuming 'imgprofile' is the column name
+            // Fetch the employee data along with station info
+            while ($row = $resultEmployee->fetch_assoc()) {
+                // Create an associative array for employee details
+                $response['data'] = [
+                    'employeeID' => htmlspecialchars($row['emp_id']),
+                    'name' => htmlspecialchars($row['firstName'] . ' ' . $row['lastName']),
+                    'position' => htmlspecialchars($row['position']),
+                    'department' => htmlspecialchars($row['department']),
+                    'stationName' => $stationName, // Use station name from the user session
+                    'profileImage' => !empty($row['imgprofile']) ? 'assets/' . htmlspecialchars($row['imgprofile']) : 'assets/blank.png',
+                    'logTimeIn' => $currentTime,
+                    'logTimeOut' => $currentTime,
+                    'logDate' => date('Y-m-d')
+                ];
             }
-            // Set alert class for success message
-            $alertClass = "alert-success";
+
+            // Set success response
+            $response['success'] = true;
         } else {
-            // Set error message and alert class for no record found
-            $employeeInfo = "No employee found with ID: " . htmlspecialchars($employeeId);
-            $alertClass = "alert-danger";
+            // Set error message for no employee record found
+            $response['message'] = "No employee found with ID: " . htmlspecialchars($employeeId);
         }
 
-        // Close statement
-        $stmt->close();
+        // Close employee statement
+        $stmtEmployee->close();
+    } else {
+        // Set error message for no user record found or no associated station
+        $response['message'] = "No user found or no associated station.";
     }
 
-    // Close the connection
-    $conn->close();
+    // Close user statement
+    $stmtUser->close();
+}
+
+// Close the connection
+$conn->close();
+
+// Return JSON response if it's an AJAX request
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    header('Content-Type: application/json');
+    
+    echo json_encode($response);
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -85,7 +121,7 @@
     <div class="row" style="height: 100%;">
         <div class="col-md-6 image-box d-flex justify-content-center align-items-center">
             <!-- Display profile picture -->
-            <img id="profileImage" class="rounded" src="<?php echo !empty($profileImagePath) ? 'assets/' . $profileImagePath : 'assets/blank.png'; ?>" alt="" class="img-fluid" style="max-width: 100%; height: auto;">
+            <img id="profileImage" class="rounded" src="<?php echo !empty($profileImagePath) ? 'assets/' . htmlspecialchars($profileImagePath) : 'assets/blank.png'; ?>" alt="" class="img-fluid" style="max-width: 100%; height: auto;">
         </div>
         <div class="col-md-6 d-flex flex-column">
             <div class="small-box mb-3">
@@ -101,8 +137,8 @@
                         <input type="text" name="employee_id" id="infoInput" class="form-control" placeholder="Enter Employee ID" style="border-radius: 5px;" onkeypress="if(event.keyCode==13){this.form.submit();}">
                     </div>
                     <!-- Display employee information -->
-                    <?php if ($employeeInfo): ?>
-                        <div id="alertBox" class="alert <?php echo $alertClass; ?> mt-3"><?php echo $employeeInfo; ?></div>
+                    <?php if (!empty($employeeInfo)): ?>
+                        <div id="alertBox" class="alert <?php echo !empty($alertClass) ? htmlspecialchars($alertClass) : ''; ?> mt-3"><?php echo !empty($employeeInfo) ? $employeeInfo : ''; ?></div>
                     <?php endif; ?>
                 </form>
             </div>
@@ -113,7 +149,35 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js"> </script>
+
+<script>
+// Handle form submission via AJAX for JSON response
+$('form').on('submit', function(e) {
+    e.preventDefault(); // Prevent default form submission
+
+    $.ajax({
+        type: 'POST',
+        url: '', // Current URL
+        data: $(this).serialize(),
+        success: function(response) {
+            console.log(response); // Log the entire response to the console for testing
+            
+            $('#alertBox').removeClass('alert-success alert-danger'); // Clear previous alerts
+
+            if (response.success) {
+                $('#alertBox').addClass('alert-success').html(response.data.info);
+                $('#currentTime').text("Current Time: " + response.data.currentTime); // Update current time display if needed
+            } else {
+                $('#alertBox').addClass('alert-danger').html(response.message);
+            }
+        },
+        error: function() {
+            $('#alertBox').addClass('alert-danger').html('An error occurred while processing your request.');
+        }
+    });
+});
+</script>
 
 </body>
 </html>

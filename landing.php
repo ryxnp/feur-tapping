@@ -26,7 +26,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     $inputPassword = $_POST['password'];
 
     // Prepare and execute SQL query to fetch user information from the users table
-    $sql = "SELECT user_id, username, password, role FROM users WHERE username = ?";
+    $sql = "SELECT u.user_id, u.username, u.password, u.role, s.station_name 
+            FROM users u 
+            LEFT JOIN stations s ON u.user_id = s.user_id 
+            WHERE u.username = ?";
+    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $inputUsername);
     $stmt->execute();
@@ -42,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
+            $_SESSION['station_name'] = !empty($user['station_name']) ? htmlspecialchars($user['station_name']) : ''; // Store station name
 
             // Redirect based on role
             if ($user['role'] === 'admin') {
