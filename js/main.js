@@ -31,3 +31,28 @@ function removeAlertAndImage() {
 
 // Call removeAlertAndImage function if there is an alert box present
 removeAlertAndImage();
+
+$('form').on('submit', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+        type: 'POST',
+        url: '', // Current URL
+        data: $(this).serialize(),
+        success: function(response) {
+            console.log(response);
+            
+            $('#alertBox').removeClass('alert-success alert-danger');
+
+            if (response.success) {
+                $('#alertBox').addClass('alert-success').html(response.data.info);
+                $('#currentTime').text("Current Time: " + response.data.currentTime);
+            } else {
+                $('#alertBox').addClass('alert-danger').html(response.message);
+            }
+        },
+        error: function() {
+            $('#alertBox').addClass('alert-danger').html('An error occurred while processing your request.');
+        }
+    });
+});
