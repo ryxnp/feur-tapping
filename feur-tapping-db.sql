@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 12, 2024 at 07:56 AM
+-- Generation Time: Dec 13, 2024 at 12:52 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,8 +47,7 @@ INSERT INTO `admin` (`admin_id`, `user_id`, `permissions`) VALUES
 --
 
 CREATE TABLE `employee` (
-  `id` int(10) NOT NULL,
-  `employeeID` varchar(20) NOT NULL,
+  `emp_id` int(15) NOT NULL,
   `firstName` varchar(25) NOT NULL,
   `lastName` varchar(25) NOT NULL,
   `position` varchar(25) DEFAULT NULL,
@@ -60,9 +59,9 @@ CREATE TABLE `employee` (
 -- Dumping data for table `employee`
 --
 
-INSERT INTO `employee` (`id`, `employeeID`, `firstName`, `lastName`, `position`, `department`, `imgprofile`) VALUES
-(1, 'EMP-0001', 'Ryan Paul', 'Rodanilla', 'OJT', 'ITS', 'default-profile.png'),
-(2, 'EMP-0002', 'Michy', 'Claraval', 'Manager', 'ITS', 'michy.png');
+INSERT INTO `employee` (`emp_id`, `firstName`, `lastName`, `position`, `department`, `imgprofile`) VALUES
+(1, 'Ryan Paul', 'Rodanilla', 'OJT', 'ITS', 'default-profile.png'),
+(2, 'Michy', 'Claraval', 'Manager', 'ITS', 'michy.png');
 
 -- --------------------------------------------------------
 
@@ -72,19 +71,12 @@ INSERT INTO `employee` (`id`, `employeeID`, `firstName`, `lastName`, `position`,
 
 CREATE TABLE `logs` (
   `log_id` int(255) NOT NULL,
-  `employeeID` varchar(20) NOT NULL,
+  `emp_id` varchar(15) NOT NULL,
   `timeIn` time(6) NOT NULL,
   `timeOut` time(6) NOT NULL,
   `date` date NOT NULL,
   `station_id` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `logs`
---
-
-INSERT INTO `logs` (`log_id`, `employeeID`, `timeIn`, `timeOut`, `date`, `station_id`) VALUES
-(1, 'EMP-0001', '10:00:00.000000', '11:00:00.000000', '2024-12-12', '1');
 
 -- --------------------------------------------------------
 
@@ -144,7 +136,7 @@ ALTER TABLE `admin`
 -- Indexes for table `employee`
 --
 ALTER TABLE `employee`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`emp_id`);
 
 --
 -- Indexes for table `logs`
@@ -178,13 +170,13 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `emp_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `log_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `log_id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `stations`
