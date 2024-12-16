@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 13, 2024 at 12:52 PM
+-- Generation Time: Dec 16, 2024 at 02:59 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -60,7 +60,7 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`emp_id`, `firstName`, `lastName`, `position`, `department`, `imgprofile`) VALUES
-(1, 'Ryan Paul', 'Rodanilla', 'OJT', 'ITS', 'default-profile.png'),
+(1, 'Ryan Paul', 'Rodanilla', 'OJT', 'ITS', 'pol.jpg'),
 (2, 'Michy', 'Claraval', 'Manager', 'ITS', 'michy.png');
 
 -- --------------------------------------------------------
@@ -72,11 +72,19 @@ INSERT INTO `employee` (`emp_id`, `firstName`, `lastName`, `position`, `departme
 CREATE TABLE `logs` (
   `log_id` int(255) NOT NULL,
   `emp_id` varchar(15) NOT NULL,
-  `timeIn` time(6) NOT NULL,
-  `timeOut` time(6) NOT NULL,
-  `date` date NOT NULL,
-  `station_id` varchar(25) NOT NULL
+  `logTimeIn` time(6) NOT NULL,
+  `logTimeOut` time(6) DEFAULT NULL,
+  `logDate` date NOT NULL,
+  `station_name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `logs`
+--
+
+INSERT INTO `logs` (`log_id`, `emp_id`, `logTimeIn`, `logTimeOut`, `logDate`, `station_name`) VALUES
+(1, '1', '09:59:34.000000', '09:59:38.000000', '2024-12-16', 'Main Gate'),
+(2, '1', '09:59:42.000000', '09:59:43.000000', '2024-12-16', 'Main Gate');
 
 -- --------------------------------------------------------
 
@@ -176,7 +184,7 @@ ALTER TABLE `employee`
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `log_id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `log_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `stations`

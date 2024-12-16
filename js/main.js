@@ -1,58 +1,23 @@
-// Function to update the current time every second
-function updateTime() {
-    const now = new Date();
-    const options = { 
-        weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', 
-        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
-    };
+// Function to clear alerts and reset fields after a timeout
+function clearFieldsAndAlerts() {
+    // Clear alerts
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => alert.classList.remove('show'));
     
-    document.getElementById('currentTime').innerHTML = now.toLocaleString('en-US', options);
+    setTimeout(() => {
+        alerts.forEach(alert => alert.remove()); // Remove from DOM after fade out
+        document.getElementById('profileImage').src = 'assets/default-profile.png'; // Reset image to default
+        document.getElementById('infoInput').value = ''; // Clear input field
+
+        // Clear employee information display (if any)
+        const employeeInfoDivs = document.querySelectorAll('.big-box div');
+        employeeInfoDivs.forEach(div => div.innerHTML = '');
+        
+        document.getElementById('currentTime').innerText = ''; // Optionally clear the current time display as well.
+        
+     }, 500);  // Delay before clearing fields for visual effect
+
 }
 
-// Update the time immediately and then every second
-updateTime();
-setInterval(updateTime, 1000);
-
-// Function to remove alert and clear image after 5 seconds
-function removeAlertAndImage() {
-    const alertBox = document.getElementById('alertBox');
-    const profileImage = document.getElementById('profileImage');
-    
-    if (alertBox) {
-        setTimeout(() => {
-            alertBox.classList.add('fade'); // Optional fade effect (requires CSS)
-            alertBox.style.display = 'none'; // Remove from view after delay
-            
-            // Clear the image as well
-            profileImage.src = 'assets/blank.png'; // Clear the image source
-        }, 5000); // Wait for 5 seconds before removing
-    }
-}
-
-// Call removeAlertAndImage function if there is an alert box present
-removeAlertAndImage();
-
-$('form').on('submit', function(e) {
-    e.preventDefault();
-
-    $.ajax({
-        type: 'POST',
-        url: '', // Current URL
-        data: $(this).serialize(),
-        success: function(response) {
-            console.log(response);
-            
-            $('#alertBox').removeClass('alert-success alert-danger');
-
-            if (response.success) {
-                $('#alertBox').addClass('alert-success').html(response.data.info);
-                $('#currentTime').text("Current Time: " + response.data.currentTime);
-            } else {
-                $('#alertBox').addClass('alert-danger').html(response.message);
-            }
-        },
-        error: function() {
-            $('#alertBox').addClass('alert-danger').html('An error occurred while processing your request.');
-        }
-    });
-});
+// Automatically clear alerts and fields after 5 seconds of page load or action.
+setTimeout(clearFieldsAndAlerts, 5000); // Adjust time as needed (5000 ms = 5 seconds)
