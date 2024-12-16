@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 16, 2024 at 02:59 AM
+-- Generation Time: Dec 16, 2024 at 09:01 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -60,8 +60,9 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`emp_id`, `firstName`, `lastName`, `position`, `department`, `imgprofile`) VALUES
-(1, 'Ryan Paul', 'Rodanilla', 'OJT', 'ITS', 'pol.jpg'),
-(2, 'Michy', 'Claraval', 'Manager', 'ITS', 'michy.png');
+(2019392025, 'Renn Michael', 'Rodanilla', 'Personnel', 'ITS', 'default-profile.png'),
+(2023190018, 'Michy', 'Claraval', 'Personnel', 'ITS', 'michy.png'),
+(2024392025, 'Ryan Paul', 'Rodanilla', 'OJT', 'ITS', 'pol.jpg');
 
 -- --------------------------------------------------------
 
@@ -83,8 +84,16 @@ CREATE TABLE `logs` (
 --
 
 INSERT INTO `logs` (`log_id`, `emp_id`, `logTimeIn`, `logTimeOut`, `logDate`, `station_name`) VALUES
-(1, '1', '09:59:34.000000', '09:59:38.000000', '2024-12-16', 'Main Gate'),
-(2, '1', '09:59:42.000000', '09:59:43.000000', '2024-12-16', 'Main Gate');
+(17, '2019392025', '14:32:33.000000', '14:32:45.000000', '2024-12-16', 'Main Gate'),
+(18, '2024392025', '14:33:12.000000', '14:33:15.000000', '2024-12-16', 'Main Gate'),
+(19, '2024392025', '14:35:17.000000', '14:36:02.000000', '2024-12-16', 'Main Gate'),
+(20, '2024392025', '14:36:11.000000', '14:38:08.000000', '2024-12-16', 'Main Gate'),
+(21, '2024392025', '14:38:11.000000', '14:38:55.000000', '2024-12-16', 'Main Gate'),
+(22, '2024392025', '14:39:35.000000', '14:41:03.000000', '2024-12-16', 'Main Gate'),
+(23, '2024392025', '14:58:01.000000', '15:01:29.000000', '2024-12-16', 'Main Gate'),
+(24, '2024392025', '15:04:56.000000', NULL, '2024-12-16', 'Main Gate'),
+(25, '2023190018', '15:05:59.000000', '15:06:35.000000', '2024-12-16', 'Main Gate'),
+(26, '2023190018', '15:06:47.000000', NULL, '2024-12-16', 'Main Gate');
 
 -- --------------------------------------------------------
 
@@ -178,13 +187,13 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `emp_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `emp_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2024392026;
 
 --
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `log_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `log_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `stations`

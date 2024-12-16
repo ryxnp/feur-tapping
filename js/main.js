@@ -21,3 +21,4 @@ function clearFieldsAndAlerts() {
 
 // Automatically clear alerts and fields after 5 seconds of page load or action.
 setTimeout(clearFieldsAndAlerts, 5000); // Adjust time as needed (5000 ms = 5 seconds)
+

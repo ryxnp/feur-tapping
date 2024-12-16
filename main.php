@@ -14,6 +14,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Clear previous employee data from session
+unset($_SESSION['employeeData']); // Place this line to clear previous employee data
+
 // Function to create a Bootstrap alert
 function createAlert($type, $bold, $message) {
     return '<div class="alert alert-' . htmlspecialchars($type) . ' alert-dismissible fade show" role="alert">
@@ -129,6 +132,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tapping Station</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="css/main.css"> -->
 </head>
 <body>
 <div class="container mt-4">
@@ -141,23 +145,28 @@ $conn->close();
             <div class="small-box mb-3">
                 <!-- Auto-updating time display -->
                 <div id="currentTime" class="timeDisplay">Loading current time...</div>
-            </div>
-            <div class="big-box flex-grow-1 d-flex flex-column justify-content-between">
-                <!-- Input group for text field and button -->
+                <!-- Input group for text field -->
                 <form method="POST" action="">
-                    <div class="form-group">
+                    <div class="form-group mt-3">
                         <input type="text" name="employee_id" id="infoInput" class="form-control" placeholder="Enter Employee ID" style="border-radius: 5px;" onkeypress="if(event.keyCode==13){this.form.submit();}">
                     </div>
-                    <!-- Display employee information -->
-                    <?php if (isset($_SESSION['employeeData'])): ?>
-                        <div class="mt-3">
-                            <h5>Employee Information:</h5>
-                            <p><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['employeeData']['firstName'] . ' ' . $_SESSION['employeeData']['lastName']); ?></p>
-                            <p><strong>Position:</strong> <?php echo htmlspecialchars($_SESSION['employeeData']['position']); ?></p>
-                            <p><strong>Department:</strong> <?php echo htmlspecialchars($_SESSION['employeeData']['department']); ?></p>
-                        </div>
-                    <?php endif; ?>
                 </form>
+            </div>
+            <div class="big-box flex-grow-1 d-flex flex-column justify-content-between">
+                <!-- Display alert messages -->
+                <?php if (!empty($alertMessage)): ?>
+                    <?php echo $alertMessage; ?>
+                <?php endif; ?>
+                
+                <!-- Display employee information -->
+                <?php if (isset($_SESSION['employeeData'])): ?>
+                    <div class="mt-3">
+                        <h5>Employee Information:</h5>
+                        <p><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['employeeData']['firstName'] . ' ' . $_SESSION['employeeData']['lastName']); ?></p>
+                        <p><strong>Position:</strong> <?php echo htmlspecialchars($_SESSION['employeeData']['position']); ?></p>
+                        <p><strong>Department:</strong> <?php echo htmlspecialchars($_SESSION['employeeData']['department']); ?></p>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -170,5 +179,16 @@ $conn->close();
     <!-- Include custom JavaScript file -->
     <script src="js/main.js"></script>
 
+    <!-- Log current user ID to console -->
+    <script>
+        // Check if user_id is set in the PHP session
+        <?php if (isset($_SESSION['user_id'])): ?>
+            console.log("Current User ID: <?php echo htmlspecialchars($_SESSION['user_id']); ?>");
+        <?php else: ?>
+            console.log("User ID not found in session.");
+        <?php endif; ?>
+    </script>
+
 </body>
 </html>
+
