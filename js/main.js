@@ -37,4 +37,3 @@ window.onload = function() {
         alertBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 };
-

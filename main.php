@@ -131,25 +131,24 @@ $conn->close();
 </head>
 <body>
 <div class="container mt-4">
+    <!-- Display alert messages -->
+            <?php if (!empty($alertMessage)): ?>
+                <div class="alert alert-warning mb-3" style="width: 100%; text-align: center;">
+                    <?php echo $alertMessage; ?>
+                </div>
+            <?php endif; ?>
     <div class="row justify-content-center"> <!-- Center the row -->
         <div class="col-md-6 d-flex flex-column align-items-center"> <!-- Center align items -->
             <div class="image-box d-flex justify-content-center align-items-center mb-3">
                 <!-- Display profile picture -->
                 <img id="profileImage" class="rounded" src="<?php echo !empty($_SESSION['employeeData']['imgprofile']) ? 'assets/' . htmlspecialchars($_SESSION['employeeData']['imgprofile']) : 'assets/default-profile.png'; ?>" alt="" class="img-fluid" style="max-width: 100%; height: auto;">
             </div>
-            <!-- Display alert messages -->
-            <?php if (!empty($alertMessage)): ?>
-                <div class="alert alert-warning mb-3" style="width: 100%; text-align: center;">
-                    <?php echo $alertMessage; ?>
-                </div>
-            <?php endif; ?>
+            
             <div class="small-box mb-3 w-100">
-                <!-- Display current time -->
                 <div id="currentTime" class="timeDisplay text-center mb-2">Loading current time...</div>
-                <!-- Input group for text field -->
                 <form method="POST" action="">
                     <div class="form-group mt-3">
-                        <input type="text" name="employee_id" id="infoInput" class="form-control" placeholder="Enter Employee ID" style="border-radius: 5px;" onkeypress="if(event.keyCode==13){this.form.submit();}">
+                        <input type="text" name="employee_id" id="infoInput" class="form-control hidden-input" placeholder="Scan Employee ID" style="border-radius: 5px;" onkeypress="if(event.keyCode==13){this.form.submit();}">
                     </div>
                 </form>
             </div>
@@ -183,6 +182,28 @@ $conn->close();
         <?php else: ?>
             console.log("User ID not found in session.");
         <?php endif; ?>
+
+        document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('infoInput').focus(); // Automatically focus on the input field
+    });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const infoInput = document.getElementById('infoInput');
+            let typingTimer; // Timer identifier
+            const doneTypingInterval = 500; // Time in ms (0.5 seconds)
+
+            // Event listener for input on the employee ID field
+            infoInput.addEventListener('input', function() {
+                clearTimeout(typingTimer); // Clear the timer if typing continues
+                typingTimer = setTimeout(() => {
+                    const employeeId = infoInput.value.trim();
+                    if (employeeId) {
+                        // Automatically submit the form if an ID is present
+                        infoInput.form.submit();
+                    }
+                }, doneTypingInterval);
+            });
+        });
 
         function updateTime() {
         const now = new Date();

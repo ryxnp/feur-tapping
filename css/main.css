@@ -1,6 +1,6 @@
-/* * {
+* {
     border: 1px solid red;
-} */
+}
 
 body {
     /* display: flex; */
@@ -17,19 +17,21 @@ body {
 }
 
 .image-box {
+    margin-top: 10%;
     padding-top: 10%;
-    padding-bottom: 5%;
-    height: 300px; /* Fixed height for the image box */
+    padding-bottom: 10%;
+    height: 350px; /* Fixed height for the image box */
     width: 300px; /* Fixed width for the image box */
     display: flex; /* Use flexbox for centering */
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
+    overflow: hidden; /* Hide overflow to prevent any part of the image from showing outside the box */
 }
 
 #profileImage {
     width: 100%; /* Make the image take full width of the box */
     height: 100%; /* Make the image take full height of the box */
-    object-fit: contain; /* Scale the image to fit without cropping */
+    object-fit: cover; /* Scale the image to fit without cropping */
 }
 
 .small-box {
@@ -63,3 +65,8 @@ body {
     font-weight: bold; /* Make it bold */
     color: #333; /* Change color */
 }
+
+/* .hidden-input {
+    position: absolute;
+    left: -9999px;
+} */
