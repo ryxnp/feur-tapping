@@ -18,13 +18,8 @@ if ($conn->connect_error) {
 unset($_SESSION['employeeData']); // Place this line to clear previous employee data
 
 // Function to create a Bootstrap alert
-function createAlert($type, $bold, $message) {
-    return '<div class="alert alert-' . htmlspecialchars($type) . ' alert-dismissible fade show" role="alert">
-                <strong>' . htmlspecialchars($bold) . '</strong> ' . htmlspecialchars($message) . '
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>';
+function createAlert($type, $bold, $message) { 
+    return '<div class="alert alert-' . htmlspecialchars($type) . ' alert-dismissible fade show" role="alert"> <strong>' . htmlspecialchars($bold) . '</strong> ' . htmlspecialchars($message) . ' <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div>'; 
 }
 
 // Function to execute prepared statements
@@ -132,19 +127,25 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tapping Station</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- <link rel="stylesheet" href="css/main.css"> -->
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-md-6 image-box d-flex justify-content-center align-items-center">
-            <!-- Display profile picture -->
-            <img id="profileImage" class="rounded" src="<?php echo !empty($_SESSION['employeeData']['imgprofile']) ? 'assets/' . htmlspecialchars($_SESSION['employeeData']['imgprofile']) : 'assets/default-profile.png'; ?>" alt="" class="img-fluid" style="max-width: 100%; height: auto;">
-        </div>
-        <div class="col-md-6 d-flex flex-column">
-            <div class="small-box mb-3">
-                <!-- Auto-updating time display -->
-                <div id="currentTime" class="timeDisplay">Loading current time...</div>
+    <div class="row justify-content-center"> <!-- Center the row -->
+        <div class="col-md-6 d-flex flex-column align-items-center"> <!-- Center align items -->
+            <div class="image-box d-flex justify-content-center align-items-center mb-3">
+                <!-- Display profile picture -->
+                <img id="profileImage" class="rounded" src="<?php echo !empty($_SESSION['employeeData']['imgprofile']) ? 'assets/' . htmlspecialchars($_SESSION['employeeData']['imgprofile']) : 'assets/default-profile.png'; ?>" alt="" class="img-fluid" style="max-width: 100%; height: auto;">
+            </div>
+            <!-- Display alert messages -->
+            <?php if (!empty($alertMessage)): ?>
+                <div class="alert alert-warning mb-3" style="width: 100%; text-align: center;">
+                    <?php echo $alertMessage; ?>
+                </div>
+            <?php endif; ?>
+            <div class="small-box mb-3 w-100">
+                <!-- Display current time -->
+                <div id="currentTime" class="timeDisplay text-center mb-2">Loading current time...</div>
                 <!-- Input group for text field -->
                 <form method="POST" action="">
                     <div class="form-group mt-3">
@@ -152,24 +153,19 @@ $conn->close();
                     </div>
                 </form>
             </div>
-            <div class="big-box flex-grow-1 d-flex flex-column justify-content-between">
-                <!-- Display alert messages -->
-                <?php if (!empty($alertMessage)): ?>
-                    <?php echo $alertMessage; ?>
-                <?php endif; ?>
-                
+            <div class="big-box flex-grow-1 d-flex flex-column justify-content-center align-items-center w-100"> <!-- Center align employee information -->
                 <!-- Display employee information -->
                 <?php if (isset($_SESSION['employeeData'])): ?>
-                    <div class="mt-3">
-                        <h5>Employee Information:</h5>
+                    <div class="text-center mt-3"> <!-- Center text within this div -->
                         <p><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['employeeData']['firstName'] . ' ' . $_SESSION['employeeData']['lastName']); ?></p>
-                        <p><strong>Position:</strong> <?php echo htmlspecialchars($_SESSION['employeeData']['position']); ?></p>
-                        <p><strong>Department:</strong> <?php echo htmlspecialchars($_SESSION['employeeData']['department']); ?></p>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
+</div>
+
+
 
     <!-- Include Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -187,6 +183,20 @@ $conn->close();
         <?php else: ?>
             console.log("User ID not found in session.");
         <?php endif; ?>
+
+        function updateTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const currentTimeString = `${hours}:${minutes}:${seconds}`;
+        
+        document.getElementById('currentTime').textContent = currentTimeString;
+    }
+
+    // Update time immediately and then every second
+    updateTime();
+    setInterval(updateTime, 1000);
     </script>
 
 </body>

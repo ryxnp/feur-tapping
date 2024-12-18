@@ -1,39 +1,65 @@
-* {border:1px solid redl}
+/* * {
+    border: 1px solid red;
+} */
 
 body {
-    display: flex;
+    /* display: flex; */
     justify-content: center; 
     align-items: center; 
     height: 100vh;
     margin: 0; 
-    background-color: #f1f1f1; 
+    background-color: #fff; 
 }
+
 .container {
     width: 1280px;
     height: 720px;
 }
+
 .image-box {
-    height: 100%;
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    padding-top: 10%;
+    padding-bottom: 5%;
+    height: 300px; /* Fixed height for the image box */
+    width: 300px; /* Fixed width for the image box */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
 }
+
+#profileImage {
+    width: 100%; /* Make the image take full width of the box */
+    height: 100%; /* Make the image take full height of the box */
+    object-fit: contain; /* Scale the image to fit without cropping */
+}
+
 .small-box {
     height: 15%;
-    background-color: #e9ecef;
-    border: 1px solid #ced4da; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* background-color: #e9ecef; */
+    /* border: 1px solid #ced4da; */
 }
+
 .big-box {
     height: 85%; 
-    background-color: #e9ecef;
+    /* background-color: #e9ecef; */
+    /* border: 1px solid #ced4da; */
+}
+
+.row {
     border: 1px solid #ced4da;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 10%;
+}
+
+.alert {
+    position: fixed; /* Fixed position */
+    top: 5px; /* Distance from the top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for centering */
+    width: calc(100% - 40px); /* Full width minus margins */
+    z-index: 1050; /* Ensure it is above other content */
 }
 
 .timeDisplay {
-    text-align: center; /* Center the text */
-    font-weight: bold; /* Make text bold */
-    font-size: 24px; /* Set font size */
-    padding: 20px; /* Add padding for better spacing */
+    font-size: 1.5rem; /* Adjust size as needed */
+    font-weight: bold; /* Make it bold */
+    color: #333; /* Change color */
 }
