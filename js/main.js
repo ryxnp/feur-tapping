@@ -1,4 +1,3 @@
-
 // Function to clear alerts and reset fields after a timeout
 function clearFieldsAndAlerts() {
     // Clear alerts
@@ -18,6 +17,12 @@ function clearFieldsAndAlerts() {
         const bigBox = document.querySelector('.big-box');
         if (bigBox) {
             bigBox.innerHTML = ''; // Clear all content in big-box
+        }
+
+        // Clear employee information - ensure this section is targeted correctly
+        const employeeInfoDiv = document.querySelector('.big-box .text-center');
+        if (employeeInfoDiv) {
+            employeeInfoDiv.innerHTML = ''; // Clear employee info display
         }
 
         // Optionally, you may want to keep the current time display intact

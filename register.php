@@ -3,19 +3,8 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Database connection
-$servername = "localhost"; // Replace with your server name
-$username = "root"; // Replace with your database username
-$password = ""; // Replace with your database password
-$dbname = "feur-tapping-db"; // Replace with your actual database name
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Include the database configuration file
+require_once 'config.php';
 
 // Initialize variables
 $errorMessage = "";

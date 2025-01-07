@@ -14,14 +14,24 @@ body {
 .container {
     width: 1280px;
     height: 720px;
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    flex-direction: column; /* Stack children vertically */
+}
+
+.row {
+    width: 100%; /* Ensure row takes full width */
+    display: flex; /* Use flex to align columns */
+    justify-content: center; /* Center columns horizontally */
+    align-items: center; /* Center columns vertically */
+    margin-top: 0; /* Remove top margin to avoid offsetting */
 }
 
 .image-box {
     margin-top: 10%;
-    padding-top: 10%;
-    padding-bottom: 10%;
-    height: 350px; /* Fixed height for the image box */
-    width: 300px; /* Fixed width for the image box */
+    height: 400px; /* Fixed height for the image box */
+    width: 400px; /* Fixed width for the image box */
     display: flex; /* Use flexbox for centering */
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
@@ -29,9 +39,7 @@ body {
 }
 
 #profileImage {
-    width: 100%; /* Make the image take full width of the box */
-    height: 100%; /* Make the image take full height of the box */
-    object-fit: cover; /* Scale the image to fit without cropping */
+    object-fit: cover; /* Scale to fit while covering area */
 }
 
 .small-box {
@@ -41,9 +49,13 @@ body {
 }
 
 .big-box {
-    height: 85%; 
-    /* background-color: #e9ecef; */
-    /* border: 1px solid #ced4da; */
+    height: 100%; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Set a fixed width for the big box */
+    width: 60%; /* Adjust this value as needed */
+    max-width: 400px; /* Optional: set a maximum width */
 }
 
 .row {

@@ -3,16 +3,8 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = ""; 
-$dbname = "feur-tapping-db"; 
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Include the database configuration file
+require_once 'config.php';
 
 // Clear previous employee data from session
 unset($_SESSION['employeeData']); // Place this line to clear previous employee data

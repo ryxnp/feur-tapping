@@ -1,0 +1,34 @@
+/* styles.css */
+
+body {
+    background-color: #f8f9fa; /* Light background for the dashboard */
+}
+
+.navbar {
+    margin-bottom: 20px; /* Space below the navbar */
+}
+
+.container {
+    margin-top: 20px; /* Space above the main content */
+}
+
+.image-box img {
+    max-width: 150px; /* Limit profile image size */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.alert {
+    margin-top: 20px; /* Space above alerts */
+}
+
+.timeDisplay {
+    font-size: 1.5rem; /* Larger font for time display */
+    font-weight: bold; /* Make time display bold */
+}
+
+.big-box {
+    padding: 20px; /* Padding for the big box */
+    border: 1px solid #ddd; /* Border around the big box */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #ffffff; /* White background for contrast */
+}
