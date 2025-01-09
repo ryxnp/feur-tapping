@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Include the database configuration file
-require_once 'config.php';
+include 'config.php';
 
 // Initialize variables
 $errorMessage = "";
