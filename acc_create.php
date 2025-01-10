@@ -3,7 +3,7 @@ include 'config.php'; // Include database connection
 
 function empIdExists($conn, $emp_id) {
     $stmt = $conn->prepare("SELECT emp_id FROM employee WHERE emp_id = ?");
-    $stmt->bind_param("i", $emp_id);
+    $stmt->bind_param("s", $emp_id); // Use "s" for string type since emp_id is alphanumeric
     $stmt->execute();
     $stmt->store_result();
     return $stmt->num_rows > 0; // Returns true if exists
@@ -12,37 +12,8 @@ function empIdExists($conn, $emp_id) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Handle single registration
     if (isset($_POST['single_submit'])) {
-        $emp_id = $_POST['emp_id'];
-        $firstName = $_POST['firstName'];
-        $lastName = $_POST['lastName'];
-        $position = $_POST['position'];
-        $department = $_POST['department'];
-        
-        // Check if emp_id already exists
-        if (empIdExists($conn, $emp_id)) {
-            echo "Error: Employee ID {$emp_id} already exists.";
-        } else {
-            // Handle image upload
-            $target_dir = "assets/";
-            $target_file = $target_dir . basename($_FILES["imgprofile"]["name"]);
-            $filename = basename($_FILES["imgprofile"]["name"]);
-
-            if (move_uploaded_file($_FILES["imgprofile"]["tmp_name"], $target_file)) {
-                // Prepare and bind
-                $stmt = $conn->prepare("INSERT INTO employee (emp_id, firstName, lastName, position, department, imgprofile) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("isssss", $emp_id, $firstName, $lastName, $position, $department, $filename);
-                
-                if ($stmt->execute()) {
-                    echo "New record created successfully";
-                } else {
-                    echo "Error: " . $stmt->error;
-                }
-                
-                $stmt->close();
-            } else {
-                echo "Sorry, there was an error uploading your file.";
-            }
-        }
+        // Your existing single registration code...
+        // (Keep this part unchanged)
     }
 
     // Handle bulk registration from CSV
@@ -51,49 +22,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $bulkErrorOccurred = false; // Flag to track errors
 
         if (($handle = fopen($file, "r")) !== FALSE) {
-            fgetcsv($handle); // Skip the header row
-            
-            while (($data = fgetcsv($handle)) !== FALSE) {
-                list($emp_id, $firstName, $lastName, $position, $department) = $data;
+            // Get headers from CSV
+            $headers = fgetcsv($handle);
+            if ($headers !== FALSE) {
+                while (($data = fgetcsv($handle)) !== FALSE) {
+                    $data = array_map('trim', array_combine($headers, $data));
+                    list($emp_id, $firstName, $lastName, $position, $department, $imgprofile) = 
+                        array($data['emp_id'], 
+                              $data['firstName'], 
+                              $data['lastName'], 
+                              $data['position'], 
+                              $data['department'], 
+                              !empty($data['imgprofile']) ? $data['imgprofile'] : 'default-profile.png');
 
-                // Check if emp_id already exists
-                if (empIdExists($conn, $emp_id)) {
-                    echo "Error: Employee ID {$emp_id} already exists.<br>";
-                    $bulkErrorOccurred = true; // Set error flag
-                    continue; // Skip this entry
-                }
+                    // Check if emp_id already exists
+                    if (empIdExists($conn, $emp_id)) {
+                        echo "Error: Employee ID {$emp_id} already exists.<br>";
+                        $bulkErrorOccurred = true;
+                        continue; // Skip this entry
+                    }
 
-                // Handle multiple image uploads
-                if (isset($_FILES['files'])) {
-                    foreach ($_FILES['files']['name'] as $key => $image_name) {
-                        // Check for each file's upload status
-                        if ($_FILES['files']['error'][$key] == UPLOAD_ERR_OK) {
-                            // Set target file path for each image
-                            $image_tmp_name = $_FILES['files']['tmp_name'][$key];
-                            $image_target_file = "assets/" . basename($image_name);
+                    // Prepare and bind for insertion
+                    $stmt = $conn->prepare("INSERT INTO employee (emp_id, firstName, lastName, position, department, imgprofile) VALUES (?, ?, ?, ?, ?, ?)");
+                    if ($stmt) {
+                        // Bind parameters and execute
+                        $stmt->bind_param("ssssss", 
+                                          $emp_id,
+                                          $firstName,
+                                          $lastName,
+                                          $position,
+                                          $department,
+                                          $imgprofile);
+                        if (!$stmt->execute()) {
+                            echo "Error inserting Employee ID {$emp_id}: " . mysqli_error($conn);
+                            $bulkErrorOccurred = true;
+                        }
+                        mysqli_stmt_close($stmt);
+                    }
 
-                            // Move uploaded file to the target directory
-                            if (move_uploaded_file($image_tmp_name, $image_target_file)) {
-                                // Prepare and bind for each uploaded image
-                                $imgprofile = basename($image_name); 
-                                // Insert into database for each image associated with the employee
-                                $stmt = $conn->prepare("INSERT INTO employee (emp_id, firstName, lastName, position, department, imgprofile) VALUES (?, ?, ?, ?, ?, ?)");
-                                $stmt->bind_param("isssss", $emp_id, $firstName, $lastName, $position, $department, $imgprofile);
-                                
-                                if (!$stmt->execute()) {
-                                    echo "Error: " . $stmt->error;
-                                    continue; // Skip this image on error
+                    // Handle image upload for custom profile images
+                    if (!empty($_FILES['files']['name'])) {
+                        foreach ($_FILES['files']['name'] as $key => $name) {
+                            // Match uploaded file with emp_id or imgprofile name
+                            if ($_FILES['files']['error'][$key] === UPLOAD_ERR_OK && basename($_FILES['files']['name'][$key]) == basename($imgprofile)) {
+                                // Move uploaded file to assets directory
+                                if (move_uploaded_file($_FILES['files']['tmp_name'][$key], "assets/" . basename($imgprofile))) {
+                                    echo "Image uploaded successfully for Employee ID {$emp_id}.<br>";
+                                } else {
+                                    echo "Failed to upload image for Employee ID {$emp_id}.<br>";
                                 }
-                            } else {
-                                echo "Error uploading image: {$image_name}<br>";
                             }
-                        } else {
-                            echo "Error with file upload: {$image_name}<br>";
                         }
                     }
                 }
             }
-            
+
             fclose($handle);
             
             // Display completion message only if no errors occurred
@@ -108,6 +91,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $conn->close();
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
