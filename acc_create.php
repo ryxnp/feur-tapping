@@ -63,16 +63,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     continue; // Skip this entry
                 }
 
-                // Assuming images are named as emp_id.jpg in the assets folder
-                $imgprofile = basename($emp_id . ".jpg"); 
-                
-                // Prepare and bind
-                $stmt = $conn->prepare("INSERT INTO employee (emp_id, firstName, lastName, position, department, imgprofile) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("isssss", $emp_id, $firstName, $lastName, $position, $department, $imgprofile);
-                
-                if (!$stmt->execute()) {
-                    echo "Error: " . $stmt->error;
-                    $bulkErrorOccurred = true; // Set error flag
+                // Handle multiple image uploads
+                if (isset($_FILES['files'])) {
+                    foreach ($_FILES['files']['name'] as $key => $image_name) {
+                        // Check for each file's upload status
+                        if ($_FILES['files']['error'][$key] == UPLOAD_ERR_OK) {
+                            // Set target file path for each image
+                            $image_tmp_name = $_FILES['files']['tmp_name'][$key];
+                            $image_target_file = "assets/" . basename($image_name);
+
+                            // Move uploaded file to the target directory
+                            if (move_uploaded_file($image_tmp_name, $image_target_file)) {
+                                // Prepare and bind for each uploaded image
+                                $imgprofile = basename($image_name); 
+                                // Insert into database for each image associated with the employee
+                                $stmt = $conn->prepare("INSERT INTO employee (emp_id, firstName, lastName, position, department, imgprofile) VALUES (?, ?, ?, ?, ?, ?)");
+                                $stmt->bind_param("isssss", $emp_id, $firstName, $lastName, $position, $department, $imgprofile);
+                                
+                                if (!$stmt->execute()) {
+                                    echo "Error: " . $stmt->error;
+                                    continue; // Skip this image on error
+                                }
+                            } else {
+                                echo "Error uploading image: {$image_name}<br>";
+                            }
+                        } else {
+                            echo "Error with file upload: {$image_name}<br>";
+                        }
+                    }
                 }
             }
             
@@ -97,8 +115,6 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Registration</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <h2>Single Employee Registration</h2>
@@ -115,6 +131,7 @@ $conn->close();
     <h2>Bulk Employee Registration</h2>
     <form action="acc_create.php" method="post" enctype="multipart/form-data">
         Upload CSV File: <input type="file" name="csv_file" accept=".csv" required><br>
+        Upload Images: <input type="file" name="files[]" multiple accept="image/*"><br>
         <input type="submit" value="Upload">
     </form>
 </body>
