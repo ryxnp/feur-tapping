@@ -202,24 +202,35 @@ $conn->close();
             <h2 class='mb-4'>Bulk Employee Registration</h2>
             <!-- Bulk Registration Form -->
             <form action="" method='post' enctype='multipart/form-data' class='mb-4'>
-                <div class='form-group'>
-                    <label for='csv_file'>Upload CSV File:</label>
-                    <input type='file' class='form-control-file' id='csv_file' name='csv_file' accept='.csv' required>
-                </div>
+            <div class="form-group">
+                <label for="csv_file">Upload CSV File:</label>
+                <input type="file" name="csv_file" id="csv_file" class="form-control">
+                <small class="form-text text-muted">Please upload a CSV file containing employee data.</small>
+            </div>
                 <button type='submit' name='bulk_submit' class='btn btn-primary'>Upload CSV</button>
             </form>
 
             <!-- Image Upload Form -->
             <h2 class='mt-4'>Upload Images</h2>
             <form action="" method='post' enctype='multipart/form-data'>
-                <div class='form-group'>
-                    <label for=''>Upload Images:</label>
-                    <input type='file' class='form-control-file' name='files[]' multiple accept='image/*'>
-                </div>
+            <div class="form-group">
+                <label for="files">Upload Images:</label>
+                <input type="file" name="files[]" id="files" class="form-control" multiple>
+                <small class="form-text text-muted">
+                    You can upload up to 500 images. The maximum total file size for all images is 200MB.
+                </small>
+            </div>
                 <button type='submit' name='image_upload_submit' class='btn btn-primary'>Upload Images</button>
             </form>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Include custom JavaScript file -->
+    <script src="js/main.js"></script>
 
 </body>
 </html>
