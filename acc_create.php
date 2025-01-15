@@ -9,14 +9,12 @@ function empIdExists($conn, $emp_id) {
     return $stmt->num_rows > 0; // Returns true if exists
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Handle single registration
-    if (isset($_POST['single_submit'])) {
-        // Your existing single registration code...
-        // (Keep this part unchanged)
-    }
+function handleSingleRegistration($conn) {
+    // Your existing single registration code...
+    // (Keep this part unchanged)
+}
 
-    // Handle bulk registration from CSV
+function handleBulkRegistration($conn) {
     if (isset($_FILES['csv_file'])) {
         $file = $_FILES['csv_file']['tmp_name'];
         $bulkErrorOccurred = false; // Flag to track errors
@@ -59,21 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         }
                         mysqli_stmt_close($stmt);
                     }
-
-                    // Handle image upload for custom profile images
-                    if (!empty($_FILES['files']['name'])) {
-                        foreach ($_FILES['files']['name'] as $key => $name) {
-                            // Match uploaded file with emp_id or imgprofile name
-                            if ($_FILES['files']['error'][$key] === UPLOAD_ERR_OK && basename($_FILES['files']['name'][$key]) == basename($imgprofile)) {
-                                // Move uploaded file to assets directory
-                                if (move_uploaded_file($_FILES['files']['tmp_name'][$key], "assets/" . basename($imgprofile))) {
-                                    echo "Image uploaded successfully for Employee ID {$emp_id}.<br>";
-                                } else {
-                                    echo "Failed to upload image for Employee ID {$emp_id}.<br>";
-                                }
-                            }
-                        }
-                    }
                 }
             }
 
@@ -89,11 +72,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+function handleImageUpload() {
+    if (!empty($_FILES['files']['name'])) {
+        foreach ($_FILES['files']['name'] as $key => $name) {
+            if ($_FILES['files']['error'][$key] === UPLOAD_ERR_OK) {
+                // Move uploaded file to assets directory
+                if (move_uploaded_file($_FILES['files']['tmp_name'][$key], "assets/" . basename($_FILES['files']['name'][$key]))) {
+                    echo "Image uploaded successfully: " . basename($_FILES['files']['name'][$key]) . "<br>";
+                } else {
+                    echo "Failed to upload image: " . basename($_FILES['files']['name'][$key]) . "<br>";
+                }
+            }
+        }
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Handle single registration
+    if (isset($_POST['single_submit'])) {
+        handleSingleRegistration($conn);
+    }
+
+    // Handle bulk registration from CSV
+    if (isset($_POST['bulk_submit'])) {
+        handleBulkRegistration($conn);
+    }
+
+    // Handle image uploads separately
+    if (isset($_POST['image_upload_submit'])) {
+        handleImageUpload();
+    }
+}
+
 $conn->close();
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -117,8 +129,13 @@ $conn->close();
     <h2>Bulk Employee Registration</h2>
     <form action="acc_create.php" method="post" enctype="multipart/form-data">
         Upload CSV File: <input type="file" name="csv_file" accept=".csv" required><br>
+        <input type="submit" name="bulk_submit" value="Upload">
+    </form>
+
+    <h2>Upload Images</h2>
+    <form action="acc_create.php" method="post" enctype="multipart/form-data">
         Upload Images: <input type="file" name="files[]" multiple accept="image/*"><br>
-        <input type="submit" value="Upload">
+        <input type="submit" name="image_upload_submit" value="Upload Images">
     </form>
 </body>
 </html>
